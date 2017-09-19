@@ -214,7 +214,7 @@ class DisplayDatatablesAsync extends DisplayDatatables implements WithRoutesInte
         if (is_null($this->distinct)) {
             $countQuery = clone $query;
             $countQuery->getQuery()->orders = null;
-            if(!is_null($countQuery->getQuery()->joins)) {
+            if(!is_null($countQuery->getQuery()->joins) || !is_null($countQuery->getQuery()->groups)) {
                 $filteredCount = DB::table(DB::raw("(" . $countQuery->toSql() . ') as t'))->count('t.id');
             } else {
                 $filteredCount = $countQuery->count();
