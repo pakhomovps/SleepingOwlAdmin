@@ -5,6 +5,7 @@ namespace SleepingOwl\Admin\Display;
 use Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use SleepingOwl\Admin\Display\Column\Link;
 use SleepingOwl\Admin\Display\Column\Text;
@@ -213,7 +214,11 @@ class DisplayDatatablesAsync extends DisplayDatatables implements WithRoutesInte
         if (is_null($this->distinct)) {
             $countQuery = clone $query;
             $countQuery->getQuery()->orders = null;
-            $filteredCount = $countQuery->count();
+            if(!is_null($countQuery->getQuery()->joins)) {
+                $filteredCount = DB::table(DB::raw("(" . $countQuery->toSql() . ') as t'))->count('t.id');
+            } else {
+                $filteredCount = $countQuery->count();
+            }
         }
 
         $this->applyOffset($query, $request);
